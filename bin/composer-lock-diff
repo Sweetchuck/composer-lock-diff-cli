@@ -55,6 +55,13 @@ include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 $appName = 'composer-lock-diff';
 $version = '1.x-dev';
 $application = new Application($appName, $version);
-$application->initialize();
+try {
+    $application->initialize();
 
-exit($application->run());
+    exit($application->run());
+}
+catch (\Throwable $error) {
+    fwrite(\STDERR, $error->getMessage());
+
+    exit(1);
+}

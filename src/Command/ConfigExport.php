@@ -10,22 +10,29 @@ use Symfony\Component\Console\Attribute;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 #[Attribute\AsCommand(
-    name: 'ping',
-    description: 'Dummy command.',
+    name: 'config:export',
+    description: 'Exports the currently used configuration.'
 )]
-class Ping extends Command implements ContainerAwareInterface, LoggerAwareInterface
+class ConfigExport extends Command implements LoggerAwareInterface
 {
 
-    use ContainerAwareTrait;
     use LoggerAwareTrait;
 
     protected InputInterface $input;
 
     protected OutputInterface $output;
+
+    protected null|ContainerInterface $container;
+
+    public function setContainer(ContainerInterface $container): static
+    {
+        $this->container = $container;
+
+        return $this;
+    }
 
     /**
      * @var array{
@@ -35,7 +42,6 @@ class Ping extends Command implements ContainerAwareInterface, LoggerAwareInterf
     protected array $result = [
         'exitCode' => 0,
     ];
-
     /**
      * {@inheritdoc}
      */
@@ -48,7 +54,7 @@ class Ping extends Command implements ContainerAwareInterface, LoggerAwareInterf
             $this
                 ->validate()
                 ->doIt();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
 
             return max($e->getCode(), 1);
@@ -64,11 +70,9 @@ class Ping extends Command implements ContainerAwareInterface, LoggerAwareInterf
 
     protected function doIt(): static
     {
-        $this->result = [
-            'exitCode' => 0,
-        ];
-
-        $this->output->writeln('pong');
+        $config = $this->container->getParameter('config');
+        $jsonFlags = \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE;
+        $this->output->writeln(json_encode($config, $jsonFlags) ?: '{}');
 
         return $this;
     }

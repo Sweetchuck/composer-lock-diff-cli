@@ -1,0 +1,75 @@
+filter:
+    right-direct-prod: &filter-right-direct-prod
+        service: 'custom'
+        options:
+            operator: 'right-direct-prod'
+    right-direct-dev: &filter-right-direct-dev
+        service: 'custom'
+        options:
+            operator: 'right-direct-dev'
+group:
+    direct-prod: &group-direct-prod
+        enabled: true
+        id: 'direct-prod'
+        title: 'Direct prod'
+        weight: 0
+        showEmpty: true
+        emptyContent: '-- empty --'
+        filter: *filter-right-direct-prod
+        comparer: ~
+    direct-dev: &group-direct-dev
+        enabled: true
+        id: 'direct-dev'
+        title: 'Direct dev'
+        weight: 1
+        showEmpty: true
+        emptyContent: '-- empty --'
+        filter: *filter-right-direct-dev
+        comparer: ~
+    other: &group-other
+        enabled: true
+        id: 'other'
+        title: 'Other'
+        weight: 999
+        showEmpty: true
+        emptyContent: '-- empty --'
+        filter: ~
+        comparer: ~
+
+format:
+    table-plain:
+        description: 'Foo'
+        service: 'console_table'
+        options:
+            columns: ~
+            groups: ~
+
+    table-group-by-direct:
+        description: 'Foo'
+        service: 'console_table'
+        options:
+            columns: ~
+            groups:
+                direct-prod: *group-direct-prod
+                direct-dev: *group-direct-dev
+                other: *group-other
+
+    markdown-plain:
+        description: 'Foo'
+        service: 'markdown_table'
+        options:
+            columns: ~
+            groups: ~
+
+    markdown-group-by-direct:
+        description: 'Foo'
+        service: 'markdown_table'
+        options:
+            columns: ~
+            groups:
+                direct-prod: *group-direct-prod
+                direct-dev: *group-direct-dev
+                other: *group-other
+    json:
+        description: 'Bar'
+        service: 'json'
