@@ -11,6 +11,3 @@
 /.git-hooks.local
 /robo.yml
 /phpstan.neon
-
-/composer.local.json
-/composer.local.lock

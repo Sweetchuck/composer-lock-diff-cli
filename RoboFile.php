@@ -593,6 +593,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
 
             $filesExtra = [
                 $this->mainState['path'] . '/composer.json',
+                $this->mainState['path'] . '/config/config.yaml',
             ];
             $files = new \AppendIterator();
             $files->append(
@@ -696,14 +697,14 @@ class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterfa
     protected function getPharStubCode(string $appName, string $startFile): string
     {
         return sprintf(
-            <<<'PHP'
-#!/usr/bin/env php
-<?php
-Phar::mapPhar(%s);
-set_include_path(%s . get_include_path());
-require(%s);
-__HALT_COMPILER();
-PHP,
+            <<< 'PHP'
+                #!/usr/bin/env php
+                <?php
+                Phar::mapPhar(%s);
+                set_include_path(%s . get_include_path());
+                require(%s);
+                __HALT_COMPILER();
+                PHP,
             var_export($appName, true),
             var_export("phar://$appName/", true),
             var_export($startFile, true),

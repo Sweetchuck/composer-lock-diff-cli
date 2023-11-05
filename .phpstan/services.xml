@@ -14,7 +14,7 @@
 
         <service
             shared="true"
-            id="filesystem"
-            class="Symfony\Component\Filesystem\Filesystem" />
+            id="composer-lock-differ"
+            class="Sweetchuck\ComposerLockDiff\LockDiffer" />
     </services>
 </container>

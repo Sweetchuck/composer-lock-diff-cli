@@ -13,28 +13,31 @@ orbs:
     COMPOSER_DISABLE_XDEBUG_WARN: '1'
     COMPOSER_CACHE_DIR: '/home/circleci/.cache/composer'
 
+.env_app: &env_app
+    APP_NAME: 'composer-lock-diff'
+
 executors:
     php_min:
         resource_class: 'small'
         environment:
             <<: *env_common
             <<: *env_composer
-
+            <<: *env_app
         docker:
             -
                 name: 'main'
                 image: 'cimg/php:8.2'
 
-#    php_plus1:
-#        resource_class: 'small'
-#        environment:
-#            <<: *env_common
-#            <<: *env_composer
-#
-#        docker:
-#            -
-#                name: 'main'
-#                image: 'cimg/php:8.3'
+    php_plus1:
+        resource_class: 'small'
+        environment:
+            <<: *env_common
+            <<: *env_composer
+            <<: *env_app
+        docker:
+            -
+                name: 'main'
+                image: 'cimg/php:8.3'
 
 
 commands:
@@ -101,8 +104,8 @@ commands:
                             tag="${CIRCLE_BRANCH}-dev+$(git log -1 --pretty='format:%ct-%h')"
                         fi
 
-                        robo -v release:build --tag="${tag}"
-                        ./artifacts/composer-suite.phar --version
+                        robo -v phar:build --tag="${tag}"
+                        ./artifacts/${APP_NAME}.phar --version
             -
                 persist_to_workspace:
                     name: 'Release build – Store the release artifacts'
@@ -177,7 +180,7 @@ commands:
                     name: 'Publish release – create and upload'
                     command: |
                         repo="${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
-                        tag="$(./artifacts/composer-suite.phar --version | sed --regexp-extended --expression 's/^.+? //g')"
+                        tag="$(./artifacts/${APP_NAME}.phar --version | sed --regexp-extended --expression 's/^.+? //g')"
                         title="${tag}"
                         notes="${tag}"
 
@@ -190,7 +193,7 @@ commands:
                         gh release upload \
                             --repo "${repo}" \
                             "${tag}" \
-                            './artifacts/composer-suite.phar'
+                            './artifacts/${APP_NAME}.phar'
 
 jobs:
     build:
@@ -245,7 +248,7 @@ workflows:
                         parameters:
                             executor:
                                 - 'php_min'
-#                                - 'php_plus1'
+                                - 'php_plus1'
             -
                 release_publish:
                     filters:
@@ -256,4 +259,4 @@ workflows:
                     requires:
                         - 'lint'
                         - 'test_php_min'
-#                        - 'test_php_plus1'
+                        - 'test_php_plus1'

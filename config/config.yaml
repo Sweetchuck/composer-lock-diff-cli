@@ -1,0 +1,8 @@
+format:
+    table:
+        description: 'Foo'
+        options:
+            columns: ~
+            groups: ~
+    json:
+        description: 'Bar'

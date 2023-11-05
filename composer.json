@@ -1,9 +1,10 @@
 {
     "type": "project",
     "name": "sweetchuck/composer-lock-diff-cli",
-    "description": "Template for CLI application.",
+    "description": "Generates reports from the differences of two composer.lock files",
     "keywords": [
-        "tempalte",
+        "composer.lock",
+        "diff",
         "CLI"
     ],
     "authors": [
@@ -23,6 +24,7 @@
     "prefer-stable": true,
     "config": {
         "allow-plugins": {
+            "sweetchuck/composer-suite": true,
             "sweetchuck/git-hooks": true
         },
         "preferred-install": {
@@ -34,12 +36,14 @@
     "repositories": [],
     "require": {
         "php": ">=8.2",
-        "ext-json": "*",
         "composer-runtime-api": "^2.2",
         "psr/log": "^3.0",
+        "sweetchuck/composer-lock-diff": "1.x-dev",
+        "symfony/config": "^6.0 || ^7.0",
         "symfony/console": "^6.0 || ^7.0",
-        "symfony/dependency-injection": "^6.0 || ^7.0",
-        "symfony/filesystem": "^6.0 || ^7.0"
+        "symfony/dependency-injection": "^6.0",
+        "symfony/filesystem": "^6.0 || ^7.0",
+        "symfony/yaml": "^6.0 || ^7.0"
     },
     "require-dev": {
         "codeception/codeception": "^5.0",
