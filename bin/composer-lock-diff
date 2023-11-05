@@ -1,0 +1,60 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * @file
+ * Entry point.
+ */
+
+declare(strict_types = 1);
+
+use Sweetchuck\ComposerLockDiffCli\Application;
+
+// @link https://getcomposer.org/doc/articles/vendor-binaries.md#finding-the-composer-autoloader-from-a-binary
+if (!isset($_composer_autoload_path)) {
+    $isPhar = extension_loaded('Phar') && \Phar::running();
+    $projectRoot = $isPhar ? \Phar::running() : '.';
+
+    $vendorDir = 'vendor';
+    if (!is_dir("$projectRoot/$vendorDir")) {
+        $composerFileName = !$isPhar && getenv('COMPOSER') ?
+            getenv('COMPOSER')
+            : 'composer.json';
+
+        $composer = json_decode(
+            file_get_contents("$projectRoot/$composerFileName") ?: '{}',
+            true,
+        );
+        if (isset($composer['config']['vendor-dir'])) {
+            $vendorDir = $composer['config']['vendor-dir'];
+        }
+    }
+
+    $vendorDirCandidates = [
+        "$projectRoot/$vendorDir",
+
+        // When __DIR__ is: "/foo/vendor/ME/MY-PROJECT-01/bin".
+        __DIR__ . '/../../..',
+
+        // When __DIR__ is: "/foo/ME/MY-PROJECT-01/bin".
+        __DIR__ . "/../$vendorDir",
+    ];
+    foreach (array_unique($vendorDirCandidates) as $vendorDir) {
+        if (file_exists("$vendorDir/autoload.php")
+            && file_exists("$vendorDir/sweetchuck/composer-lock-diff-cli")
+        ) {
+            $_composer_autoload_path = "$vendorDir/autoload.php";
+
+            break;
+        }
+    }
+}
+
+include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+$appName = 'composer-lock-diff';
+$version = '1.x-dev';
+$application = new Application($appName, $version);
+$application->initialize();
+
+exit($application->run());

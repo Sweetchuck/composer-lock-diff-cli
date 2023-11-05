@@ -1,0 +1,7 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - .phpstan/parameters.general.neon
+    - .phpstan/parameters.paths.neon
+    - .phpstan/parameters.ignoreErrors.baseline.neon
+    - .phpstan/parameters.typeAliasesProd.neon
+    - .phpstan/parameters.typeAliasesDev.neon
